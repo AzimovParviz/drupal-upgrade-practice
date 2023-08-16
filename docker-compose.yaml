@@ -1,7 +1,12 @@
 version: '1'
+ 
+volumes:
+  drupal-data:
+  db-data-d7:
+  db-data-d10:
 
 services:
-  mariadbd7:
+  mariadb7:
     image: mariadb
     container_name: mariadb-drupal7
     command: --default-authentication-plugin=mysql_native_password
@@ -19,7 +24,7 @@ services:
     image: drupal:7-php8.0-apache-bullseye
     container_name: drupal7
     depends_on:
-      - mariadb
+      - mariadb7
     restart: unless-stopped
     ports:
       - 8081:80
@@ -27,9 +32,9 @@ services:
       - internal
       - external
     volumes:
-      - drupal-data:/var/www/html/d7
+      - drupal-data:/drupal
 
-  mariadbd10:
+  mariadb10:
     image: mariadb
     container_name: mariadb-drupal10
     command: --default-authentication-plugin=mysql_native_password
@@ -46,15 +51,16 @@ services:
     image: drupal:10.1.2-php8.1-apache-bullseye
     container_name: drupal10
     depends_on:
-      - mariadb
+      - mariadb10
     restart: unless-stopped
     ports:
-      - 8082:81
+      - 8082:80
     networks:
       - internal
       - external
+      - shared
     volumes:
-      - drupal-data:/var/www/html/d10
+      - drupal-data:/drupal
 
 networks:
   external: 
@@ -63,8 +69,4 @@ networks:
     driver: bridge
   shared:
     driver: bridge
-  
-volumes:
-  drupal-data:
-  db-data-d7:
-  db-data-d10:
+ 
